@@ -649,9 +649,11 @@
   
   .save-btn {
     padding: 12px;
+    max-width: 100px;
   }
 }
 .status-pill.por-encomenda {
   background-color: #2980b9; /* Cor azul por exemplo */
   color: white;
 }
+
