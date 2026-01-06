@@ -1,10 +1,8 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom"; // Importado corretamente
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import "../styles/projects.css";
-
-// Importações do Firebase
 import { db } from "../firebase";
 import { collection, onSnapshot, query, orderBy, doc } from "firebase/firestore";
 
@@ -23,13 +21,12 @@ interface Work {
 
 export default function Projects() {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // --- Estados de Dados do Firebase ---
   const [worksData, setWorksData] = useState<Work[]>([]);
-  const [categories, setCategories] = useState<string[]>([]); // Categorias vindas do banco
+  const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // --- Estados de Filtro (Persistidos no sessionStorage) ---
   const [searchTerm, setSearchTerm] = useState(() => sessionStorage.getItem("art_searchTerm") || "");
   const [category, setCategory] = useState(() => sessionStorage.getItem("art_category") || "Todos");
   const [sortBy, setSortBy] = useState(() => sessionStorage.getItem("art_sortBy") || "recent");
@@ -38,24 +35,30 @@ export default function Projects() {
   const itemsPerPage = 9;
   const isFirstRender = useRef(true);
 
-  // 1. ESCUTAR FIREBASE (Obras e Categorias)
+  // --- NOVO: Captura o filtro vindo do Header ---
   useEffect(() => {
-    // Escuta Obras
+    if (location.state && location.state.categoryFilter) {
+      const filterFromNav = location.state.categoryFilter;
+      setCategory(filterFromNav);
+      // Limpa o state do histórico para não travar no filtro se a página for recarregada
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
+
+  useEffect(() => {
     const q = query(collection(db, "artworks"), orderBy("date", "desc"));
     const unsubWorks = onSnapshot(q, (snapshot) => {
       const docs = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       })) as Work[];
-
       setWorksData(docs);
-      setLoading(false); // Garante que o loading saia mesmo se docs for []
+      setLoading(false);
     }, (error) => {
       console.error("Erro ao buscar obras:", error);
       setLoading(false);
     });
 
-    // Escuta Categorias Dinâmicas
     const unsubCats = onSnapshot(doc(db, "settings", "categories"), (snapshot) => {
       if (snapshot.exists()) {
         setCategories(snapshot.data().list || []);
@@ -68,7 +71,6 @@ export default function Projects() {
     };
   }, []);
 
-  // 2. Salvar preferências no sessionStorage
   useEffect(() => {
     sessionStorage.setItem("art_searchTerm", searchTerm);
     sessionStorage.setItem("art_category", category);
@@ -76,7 +78,6 @@ export default function Projects() {
     sessionStorage.setItem("art_page", currentPage.toString());
   }, [searchTerm, category, sortBy, currentPage]);
 
-  // 3. Resetar página ao filtrar
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
@@ -85,7 +86,6 @@ export default function Projects() {
     setCurrentPage(1);
   }, [searchTerm, category]);
 
-  // 4. Lógica de Filtro e Ordenação
   const filteredWorks = useMemo(() => {
     return worksData
       .filter((work) => {
@@ -118,7 +118,6 @@ export default function Projects() {
               className="search-input"
             />
             <div className="select-group">
-              {/* SELECT DINÂMICO DE CATEGORIAS */}
               <select value={category} onChange={(e) => setCategory(e.target.value)}>
                 <option value="Todos">Todas Categorias</option>
                 {categories.map((cat) => (
@@ -140,66 +139,63 @@ export default function Projects() {
         {loading ? (
           <div className="loading-state">Carregando acervo...</div>
         ) : (
-          <div className="projects-grid">
-            {currentItems.map((work) => (
-              <div key={work.id} className="project-card">
-                <div className="card-image-container">
-                  <img src={work.image} alt={work.title} />
-                  <span className={`card-badge ${work.status}`}>{work.category}</span>
-                  {work.status === "vendido" && <div className="sold-overlay">Vendido</div>}
-                </div>
-                <div className="card-info">
-                  <h3>{work.title}</h3>
-
-                  <div className="price-status-row">
-                    <p className="card-price">
-                      {work.price
-                        ? `R$ ${Number(work.price).toLocaleString('pt-BR', {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2
-                        })}`
-                        : "Consulte valor"}
-                    </p>
-
-                    {/* Nova tag de status ao lado do preço */}
-                    <span className={`status-tag ${work.status}`}>
-                      {work.status === "disponivel" ? "Disponível" :
-                        work.status === "vendido" ? "Vendido" : "Por Encomenda"}
-                    </span>
+          <>
+            <div className="projects-grid">
+              {currentItems.map((work) => (
+                <div key={work.id} className="project-card">
+                  <div className="card-image-container">
+                    <img src={work.image} alt={work.title} />
+                    <span className={`card-badge ${work.status}`}>{work.category}</span>
+                    {work.status === "vendido" && <div className="sold-overlay">Vendido</div>}
                   </div>
-
-                  <p className="card-size">{work.dimensions}</p>
-
-                  <button
-                    className="view-details-btn"
-                    onClick={() => navigate(`/art/${work.id}`, { state: { work } })}
-                  >
-                    Ver Detalhes
-                  </button>
+                  <div className="card-info">
+                    <h3>{work.title}</h3>
+                    <div className="price-status-row">
+                      <p className="card-price">
+                        {work.price
+                          ? `R$ ${Number(work.price).toLocaleString('pt-BR', {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2
+                            })}`
+                          : "Consulte valor"}
+                      </p>
+                      <span className={`status-tag ${work.status}`}>
+                        {work.status === "disponivel" ? "Disponível" :
+                          work.status === "vendido" ? "Vendido" : "Por Encomenda"}
+                      </span>
+                    </div>
+                    <p className="card-size">{work.dimensions}</p>
+                    <button
+                      className="view-details-btn"
+                      onClick={() => navigate(`/art/${work.id}`, { state: { work } })}
+                    >
+                      Ver Detalhes
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
 
-        {totalPages > 1 && (
-          <div className="pagination">
-            <button disabled={currentPage === 1} onClick={() => setCurrentPage(prev => prev - 1)}>
-              Anterior
-            </button>
-            {Array.from({ length: totalPages }, (_, i) => (
-              <button
-                key={i + 1}
-                onClick={() => setCurrentPage(i + 1)}
-                className={currentPage === i + 1 ? "active" : ""}
-              >
-                {i + 1}
-              </button>
-            ))}
-            <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(prev => prev + 1)}>
-              Próximo
-            </button>
-          </div>
+            {totalPages > 1 && (
+              <div className="pagination">
+                <button disabled={currentPage === 1} onClick={() => setCurrentPage(prev => prev - 1)}>
+                  Anterior
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <button
+                    key={i + 1}
+                    onClick={() => setCurrentPage(i + 1)}
+                    className={currentPage === i + 1 ? "active" : ""}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+                <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(prev => prev + 1)}>
+                  Próximo
+                </button>
+              </div>
+            )}
+          </>
         )}
       </main>
       <Footer />

@@ -1,15 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { db } from "../firebase"; // Importe a conexão do banco
+import { db } from "../firebase";
 import { doc, onSnapshot } from "firebase/firestore";
 import '../styles/header.css';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [categories, setCategories] = useState<string[]>([]); // Estado para as categorias
+  const [categories, setCategories] = useState<string[]>([]);
   const navigate = useNavigate();
 
-  // Buscar as categorias cadastradas em tempo real
   useEffect(() => {
     const unsub = onSnapshot(doc(db, "settings", "categories"), (snapshot) => {
       if (snapshot.exists()) {
@@ -34,20 +33,34 @@ export default function Header() {
           <div className="submenu-wrapper">
             <span className="submenu-label">Categorias</span>
             <div className="submenu">
-              {/* Se não houver categorias, mostra uma mensagem ou link padrão */}
-              {categories.length > 0 ? (
-                categories.map((cat) => (
-                  <Link 
-                    key={cat} 
-                    to="/projects" 
-                    state={{ filter: cat }} // Passa a categoria para filtrar na galeria
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    {cat}
-                  </Link>
-                ))
-              ) : (
-                <span className="no-cat">Nenhuma categoria</span>
+              
+              {/* Opção FIXA: Sempre aparece e não pode ser editada no dashboard */}
+              <Link 
+                to="/projects" 
+                state={{ categoryFilter: "Todos" }} 
+                onClick={() => setMenuOpen(false)}
+                className="fixed-category"
+              >
+                Todas as Categorias
+              </Link>
+
+              {/* Divisor visual opcional */}
+              {categories.length > 0 && <hr className="menu-divider" />}
+
+              {/* Categorias Dinâmicas vindas do Firebase */}
+              {categories.map((cat) => (
+                <Link 
+                  key={cat} 
+                  to="/projects" 
+                  state={{ categoryFilter: cat }} 
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {cat}
+                </Link>
+              ))}
+
+              {categories.length === 0 && (
+                <span className="no-cat">Nenhuma outra categoria</span>
               )}
             </div>
           </div>
