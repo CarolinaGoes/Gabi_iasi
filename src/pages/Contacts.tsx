@@ -7,7 +7,6 @@ export default function Contacts() {
     { label: "Instagram", url: "https://www.instagram.com/gabrielaiasipilch/", pos: { top: '40%', left: '61%' } },
     { label: "Facebook", url: "https://www.facebook.com/gabi.iasipilch.9", pos: { top: '65%', left: '45%' } },
     { label: "WhatsApp", url: "https://wa.me/+5511913297566", pos: { top: '87%', left: '44%' } },
-    /* Adicionado o prefixo mailto: para funcionar como link de e-mail */
     { label: "E-mail", url: "mailto:nic.rubini@hotmail.com", pos: { top: '89%', left: '68%' } },
   ];
 

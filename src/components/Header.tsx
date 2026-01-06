@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom"; // Importe o Link
 import '../styles/header.css';
 
 export default function Header() {
@@ -9,6 +9,7 @@ export default function Header() {
   return (
     <header>
       <div className="header-left">
+        {/* Use navigate para botões de ação rápida */}
         <button onClick={() => navigate("/")}>Início</button>
         <button onClick={() => navigate("/sobre")}>Sobre</button>
       </div>
@@ -17,17 +18,21 @@ export default function Header() {
         <button onClick={() => setMenuOpen(!menuOpen)}>Menu</button>
 
         <div className={`dropdown ${menuOpen ? "active" : ""}`}>
-          {/* Submenu-wrapper agora sem lógica de clique, sempre com classe 'open' no CSS */}
           <div className="submenu-wrapper">
             <span className="submenu-label">Categorias</span>
             <div className="submenu">
-              <a href="/categoria-pinturas">Pinturas</a>
-              <a href="/categoria-desenhos">Desenhos</a>
-              <a href="/categoria-mistas">Técnicas Mistas</a>
+              <Link to="/projects" onClick={() => setMenuOpen(false)}>Pinturas</Link>
+              <Link to="/projects" onClick={() => setMenuOpen(false)}>Desenhos</Link>
             </div>
           </div>
 
-          <a href="/contato">Contatos</a>
+          <Link 
+            to="/contacts" 
+            className="contact-link" 
+            onClick={() => setMenuOpen(false)}
+          >
+            Contatos
+          </Link>
         </div>
       </div>
     </header>
