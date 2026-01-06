@@ -1,0 +1,115 @@
+header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 72px; /* Aumentei um pouco para respirar melhor */
+  padding: 0 6%;
+  background: transparent;
+  z-index: 1000;
+}
+
+/* Botões da Esquerda (Início/Sobre) */
+header .header-left {
+  display: flex;
+  gap: 15px;
+}
+
+header button {
+  padding: 10px 22px;
+  background: rgba(0, 0, 0, .35);
+  color: white !important; /* Força branco */
+  border: 1px solid rgba(255, 255, 255, .25);
+  border-radius: 999px;
+  font-size: .75rem;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: all .3s ease;
+}
+
+header button:hover {
+  background: rgba(255, 255, 255, 0.18);
+  transform: translateY(-2px);
+}
+
+/* MENU WRAPPER */
+.menu-wrapper {
+  position: relative;
+}
+
+/* DROPDOWN PRINCIPAL */
+.dropdown {
+  position: absolute;
+  top: 120%;
+  right: 0;
+  width: 240px;
+  background: rgba(20, 20, 20, 0.95); /* Fundo escuro para destacar o texto branco */
+  backdrop-filter: blur(14px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centraliza tudo */
+  padding: 15px 0;
+  
+  /* Animação */
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
+  transition: all .25s ease;
+}
+
+.dropdown.active {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* LINKS DO MENU E LABEL DE CATEGORIAS */
+.dropdown a, 
+.submenu-label {
+  width: 100%;
+  padding: 12px 0;
+  color: white !important; /* Garante branco na Home e no Sobre */
+  text-align: center;
+  text-decoration: none;
+  font-size: 0.85rem;
+  display: block;
+}
+
+.submenu-label {
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  opacity: 0.6; /* Um pouco mais discreto que os links */
+  padding-top: 10px;
+}
+
+/* SUBMENU SEMPRE ABERTO */
+.submenu {
+  display: flex !important; /* Força ficar visível */
+  flex-direction: column;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05); /* Fundo levemente diferente */
+  margin: 5px 0 10px 0;
+}
+
+.submenu a {
+  padding: 10px 0;
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.dropdown a:hover, 
+.submenu a:hover {
+  background: rgba(255, 255, 255, 0.12);
+  opacity: 1;
+}

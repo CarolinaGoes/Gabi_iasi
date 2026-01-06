@@ -1,0 +1,33 @@
+/* 1. Definimos uma altura fixa para o card para que o layout seja previsível */
+.art-card {
+  width: 100%;
+  height: 18rem; /* Altere este valor para a altura que você deseja (ex: 300px ou 400px) */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.13); 
+}
+
+/* 2. As setas precisam de 'position: absolute' em relação ao 'carousel-wrapper' */
+.carousel-btn {
+  position: absolute;
+  top: 50%;            /* Centraliza verticalmente no meio do card */
+  transform: translateY(-50%);
+  z-index: 10;         /* Garante que fiquem acima da imagem */
+  background: rgba(0,0,0,0.5);
+  color: white;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 50%;
+}
+
+.carousel-btn.prev { left: 10px; }
+.carousel-btn.next { right: 10px; }
+
+/* 3. O wrapper deve ter a altura ditada pelo card */
+.carousel-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative; /* Isso mantém as setas 'presas' ao carrossel */
+}

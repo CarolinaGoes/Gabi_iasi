@@ -1,0 +1,118 @@
+/* ======================
+   FONDO DA PÁGINA SOBRE
+====================== */
+.about-page-wrapper {
+    min-height: 100vh;
+    /* Ajuste o caminho da imagem se necessário */
+    background-image: 
+        linear-gradient(rgba(30,15,10,.75), rgba(30,15,10,.9)),
+        url("/bk2.jpg");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: white;
+}
+
+/* ======================
+   LAYOUT
+====================== */
+.about-container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0px 6% 90px; 
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 40px;
+    align-items: center;
+}
+
+@media (max-width: 900px) {
+    .about-container {
+        grid-template-columns: 1fr;
+        padding-top: 80px;
+    }
+}
+
+/* ======================
+   FOTO
+====================== */
+.about-photo {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    max-width: 65%;
+    margin: 0 auto;
+}
+
+.about-photo::before {
+    content: "";
+    position: absolute;
+    inset: 12px;
+    border-radius: 20px;
+    background: rgba(90, 30, 20, 0.45);
+    filter: blur(16px);
+}
+
+.about-photo img {
+    position: relative;
+    width: 100%;
+    max-width: 440px;
+    aspect-ratio: 3/4; /* Mantém a proporção da foto */
+    object-fit: cover;
+    border-radius: 50%;
+    box-shadow: 
+        0 35px 90px rgba(0,0,0,.6),
+        inset 0 0 0 1px rgba(255,255,255,.2);
+    transition: transform .4s ease;
+}
+
+.about-photo img:hover {
+    transform: translateY(-6px);
+}
+
+/* ======================
+   CARD TEXTO
+====================== */
+.about-content {
+    background: rgba(255,255,255,.08);
+    backdrop-filter: blur(14px);
+    border-radius: 28px;
+    padding: 48px;
+    box-shadow: 0 30px 80px rgba(0,0,0,.45);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.about-content h1 {
+    margin: 0 0 14px;
+    font-size: clamp(2.2rem, 4vw, 3rem);
+    font-weight: 300;
+}
+
+.about-content h2 {
+    font-size: .75rem;
+    letter-spacing: .4em;
+    text-transform: uppercase;
+    opacity: .7;
+    margin-bottom: 28px;
+}
+
+.about-content p {
+    line-height: 1.8;
+    font-size: 1.05rem;
+    opacity: .92;
+    margin-bottom: 20px;
+}
+
+.about-highlight {
+    margin-top: 32px;
+    padding-left: 20px;
+    border-left: 2px solid rgba(255,255,255,.4);
+    font-style: italic;
+    opacity: .85;
+}
+
+@media (max-width: 480px) {
+    .about-content {
+        padding: 30px;
+    }
+}

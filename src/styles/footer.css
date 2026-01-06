@@ -1,0 +1,35 @@
+.admin-footer {
+  width: 100%;
+  background: #000;
+  padding: 15px 0;
+  margin-top: auto;
+  border-top: 1px solid #1a1a1a;
+}
+
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 40px;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.8rem;
+}
+
+.dev-link {
+  color: #fff;
+  font-weight: 500;
+  text-decoration: none; /* Remove o sublinhado */
+  transition: opacity 0.2s;
+}
+
+.dev-link:hover {
+  opacity: 0.7; /* Efeito visual ao passar o mouse */
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .footer-container {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
+}
