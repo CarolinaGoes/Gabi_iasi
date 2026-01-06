@@ -3,7 +3,7 @@
   width: 100%;
   background-image: 
     linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)), 
-    url("/social.png"); /* Reutilizando sua imagem de fundo */
+    url("/social.jpg"); /* Reutilizando sua imagem de fundo */
   background-size: cover;
   background-position: center;
   display: flex;
@@ -101,4 +101,19 @@
   background: rgba(255, 255, 255, 0.9);
   transform: translateY(-2px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+.error-message {
+  background-color: #ffeded;
+  color: #e74c3c;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  font-size: 0.9rem;
+  text-align: center;
+  border: 1px solid #e74c3c33;
+}
+
+.login-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }

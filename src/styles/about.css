@@ -116,3 +116,15 @@
         padding: 30px;
     }
 }
+.bio-text p {
+  margin-bottom: 1.5rem; /* Dá espaço entre os parágrafos */
+  line-height: 1.6;      /* Melhora a leitura do texto longo */
+  color: #eee;           /* Ajuste de cor para o fundo escuro */
+}
+
+.about-highlight {
+  font-style: italic;
+  margin-top: 2rem;
+  padding-left: 1rem;
+  border-left: 3px solid #d4af37; /* Um detalhe em dourado/bege para a citação */
+}

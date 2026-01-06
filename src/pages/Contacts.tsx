@@ -19,7 +19,7 @@ export default function Contacts() {
         </div>
 
         <div className="interactive-map">
-          <img src="/social.png" alt="Estante de contatos" className="map-background" />
+          <img src="/social.jpg" alt="Estante de contatos" className="map-background" />
           
           {socialLinks.map((social, index) => (
             <a 

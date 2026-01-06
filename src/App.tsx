@@ -6,6 +6,7 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import Projects from "./pages/Projects";
 import Art from "./pages/Art";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 
 
@@ -17,16 +18,19 @@ function App() {
         {/* Rota principal que carrega a Home (e consequentemente o Header) */}
         <Route path="/" element={<Home />} />
         <Route path="/admin" element={<AdminLogin />} />
-        <Route path="/admindashboard" element={<AdminDashboard />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/art/:id" element={<Art />} />
         <Route path="/sobre" element={<About />} />
         <Route path="/contacts" element={<Contacts />} />
+        <Route
+          path="/admindashboard"
+          element={
+            <ProtectedRoute>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
 
-
-
-        {/* Rota para categorias */}
-        <Route path="/categoria-pinturas" element={<div>Panturas</div>} />
 
         {/* Rota de erro (opcional) */}
         <Route path="*" element={<div>Página não encontrada</div>} />

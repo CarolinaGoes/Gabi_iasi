@@ -128,3 +128,56 @@
   .art-content-grid { grid-template-columns: 1fr; }
   .art-title { font-size: 2.5rem; }
 }
+/* Badge de Status sobre a imagem */
+.status-badge {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  z-index: 2;
+  color: white;
+}
+
+.status-badge.disponivel { background-color: #27ae60; }
+.status-badge.vendido { background-color: #c0392b; }
+.status-badge.sob-medida { background-color: #2980b9; }
+
+/* Estilo do botão desabilitado */
+.btn-interest:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Garante que a imagem ocupe o espaço correto */
+.image-frame {
+  position: relative; /* Necessário para a badge de status */
+  overflow: hidden;
+  border-radius: 12px;
+}
+.status-tag {
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: inline-block;
+}
+
+.status-tag.disponivel { 
+  background: #2ecc7133; 
+  color: #2ecc71; 
+}
+
+.status-tag.vendido { 
+  background: #e74c3c33; 
+  color: #e74c3c; 
+}
+
+.status-tag.por-encomenda { 
+  background: #208bd3; 
+  color: #acd6f1; 
+}

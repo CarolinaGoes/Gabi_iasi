@@ -171,6 +171,7 @@
 
 .status-tag.disponivel { background: #2ecc7133; color: #2ecc71; }
 .status-tag.vendido { background: #e74c3c33; color: #e74c3c; }
+.status-tag.por-encomenda { background: #208bd3; color: #acd6f1; }
 
 .save-btn.primary {
   background: #fff;
@@ -596,4 +597,8 @@
   .save-btn {
     padding: 12px;
   }
+}
+.status-pill.por-encomenda {
+  background-color: #2980b9; /* Cor azul por exemplo */
+  color: white;
 }
