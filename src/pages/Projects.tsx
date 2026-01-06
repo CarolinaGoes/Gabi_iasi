@@ -1,4 +1,5 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom"; 
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import "../styles/projects.css";
@@ -17,28 +18,37 @@ interface Work {
 
 const worksData: Work[] = [
   { id: 1, title: "Vibração Solar", category: "Pintura", price: 2100, size: "120x90cm", description: "Cores vibrantes...", image: "https://via.placeholder.com/400", date: "2024-01-15", popularity: 85 },
-  { id: 1, title: "Vibração Solar", category: "Pintura", price: 2100, size: "120x90cm", description: "Cores vibrantes...", image: "https://via.placeholder.com/400", date: "2024-01-15", popularity: 85 },
-  { id: 1, title: "Vibração Solar", category: "Pintura", price: 2100, size: "120x90cm", description: "Cores vibrantes...", image: "https://via.placeholder.com/400", date: "2024-01-15", popularity: 85 },
-  { id: 2, title: "Abstração Azul", category: "Pintura", price: 1200, size: "100x80cm", description: "Nuances oceânicas...", image: "https://via.placeholder.com/400", date: "2024-02-10", popularity: 92 },
-  { id: 2, title: "Abstração Azul", category: "Pintura", price: 1200, size: "100x80cm", description: "Nuances oceânicas...", image: "https://via.placeholder.com/400", date: "2024-02-10", popularity: 92 },
-  { id: 2, title: "Abstração Azul", category: "Pintura", price: 1200, size: "100x80cm", description: "Nuances oceânicas...", image: "https://via.placeholder.com/400", date: "2024-02-10", popularity: 92 },
-  { id: 2, title: "Abstração Azul", category: "Pintura", price: 1200, size: "100x80cm", description: "Nuances oceânicas...", image: "https://via.placeholder.com/400", date: "2024-02-10", popularity: 92 },
-  { id: 2, title: "Abstração Azul", category: "Pintura", price: 1200, size: "100x80cm", description: "Nuances oceânicas...", image: "https://via.placeholder.com/400", date: "2024-02-10", popularity: 92 },
-  { id: 2, title: "Abstração Azul", category: "Pintura", price: 1200, size: "100x80cm", description: "Nuances oceânicas...", image: "https://via.placeholder.com/400", date: "2024-02-10", popularity: 92 },
   { id: 2, title: "Abstração Azul", category: "Pintura", price: 1200, size: "100x80cm", description: "Nuances oceânicas...", image: "https://via.placeholder.com/400", date: "2024-02-10", popularity: 92 },
   { id: 3, title: "Linhas Urbanas", category: "Desenho", price: 450, size: "50x50cm", description: "Traços inspirados...", image: "https://via.placeholder.com/400", date: "2023-12-05", popularity: 78 },
-  { id: 3, title: "Linhas Urbanas", category: "Desenho", price: 450, size: "50x50cm", description: "Traços inspirados...", image: "https://via.placeholder.com/400", date: "2023-12-05", popularity: 78 },
-  { id: 3, title: "Linhas Urbanas", category: "Desenho", price: 450, size: "50x50cm", description: "Traços inspirados...", image: "https://via.placeholder.com/400", date: "2023-12-05", popularity: 78 },
+  // Adicione mais itens aqui para testar a paginação
 ];
 
 export default function Projects() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [category, setCategory] = useState("Todos");
-  const [sortBy, setSortBy] = useState("recent");
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 9; // Alterado para 9 conforme solicitado
+  const navigate = useNavigate(); 
+  
+  // 1. Inicializa os estados tentando ler do sessionStorage para persistir ao voltar
+  const [searchTerm, setSearchTerm] = useState(() => sessionStorage.getItem("art_searchTerm") || "");
+  const [category, setCategory] = useState(() => sessionStorage.getItem("art_category") || "Todos");
+  const [sortBy, setSortBy] = useState(() => sessionStorage.getItem("art_sortBy") || "recent");
+  const [currentPage, setCurrentPage] = useState(() => Number(sessionStorage.getItem("art_page")) || 1);
+  
+  const itemsPerPage = 9;
+  const isFirstRender = useRef(true);
 
+  // 2. Salva as preferências no sessionStorage sempre que mudarem
   useEffect(() => {
+    sessionStorage.setItem("art_searchTerm", searchTerm);
+    sessionStorage.setItem("art_category", category);
+    sessionStorage.setItem("art_sortBy", sortBy);
+    sessionStorage.setItem("art_page", currentPage.toString());
+  }, [searchTerm, category, sortBy, currentPage]);
+
+  // 3. Resetar para a página 1 apenas quando o usuário alterar filtros manualmente
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
     setCurrentPage(1);
   }, [searchTerm, category]);
 
@@ -100,22 +110,22 @@ export default function Projects() {
                 <h3>{work.title}</h3>
                 <p className="card-price">R$ {work.price}</p>
                 <p className="card-size">{work.size}</p>
-                <button className="view-details-btn">Ver Detalhes</button>
+                <button 
+                  className="view-details-btn"
+                  onClick={() => navigate(`/art/${work.id}`, { state: { work } })}
+                >
+                  Ver Detalhes
+                </button>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Paginação */}
         {totalPages > 1 && (
           <div className="pagination">
-            <button 
-              disabled={currentPage === 1} 
-              onClick={() => setCurrentPage(prev => prev - 1)}
-            >
+            <button disabled={currentPage === 1} onClick={() => setCurrentPage(prev => prev - 1)}>
               Anterior
             </button>
-            
             {Array.from({ length: totalPages }, (_, i) => (
               <button 
                 key={i + 1} 
@@ -125,11 +135,7 @@ export default function Projects() {
                 {i + 1}
               </button>
             ))}
-
-            <button 
-              disabled={currentPage === totalPages} 
-              onClick={() => setCurrentPage(prev => prev + 1)}
-            >
+            <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(prev => prev + 1)}>
               Próximo
             </button>
           </div>
