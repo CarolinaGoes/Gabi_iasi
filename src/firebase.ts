@@ -1,5 +1,9 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { 
+  initializeFirestore, 
+  persistentLocalCache, 
+  persistentMultipleTabManager 
+} from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
@@ -11,10 +15,17 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
-
+// Inicializa o App
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app); // 3. Crie a constante auth
 
-// 4. Exporte o auth aqui
+// Inicializa o Auth
+const auth = getAuth(app); 
+
+// Inicializa o Firestore com Cache Persistente (Melhora muito a velocidade no Mobile)
+const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({
+    tabManager: persistentMultipleTabManager()
+  })
+});
+
 export { db, auth };

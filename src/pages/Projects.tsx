@@ -1,10 +1,17 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom"; // Importado corretamente
+import { useNavigate, useLocation } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import "../styles/projects.css";
 import { db } from "../firebase";
-import { collection, onSnapshot, query, orderBy, doc } from "firebase/firestore";
+import { 
+  collection, 
+  onSnapshot, 
+  query, 
+  orderBy, 
+  doc, 
+  limit // Importação unificada
+} from "firebase/firestore";
 
 interface Work {
   id: string;
@@ -35,19 +42,25 @@ export default function Projects() {
   const itemsPerPage = 9;
   const isFirstRender = useRef(true);
 
-  // --- NOVO: Captura o filtro vindo do Header ---
+  // --- Captura o filtro vindo do Header ---
   useEffect(() => {
     if (location.state && location.state.categoryFilter) {
       const filterFromNav = location.state.categoryFilter;
       setCategory(filterFromNav);
-      // Limpa o state do histórico para não travar no filtro se a página for recarregada
       window.history.replaceState({}, document.title);
     }
   }, [location]);
 
+  // --- Busca de Dados ---
   useEffect(() => {
-    const q = query(collection(db, "artworks"), orderBy("date", "desc"));
-    const unsubWorks = onSnapshot(q, (snapshot) => {
+    // Definimos a Query com limite para não travar o celular no carregamento inicial
+    const qWorks = query(
+      collection(db, "artworks"), 
+      orderBy("date", "desc"), 
+      limit(40) // Aumentei para 40 para garantir que filtros funcionem bem no início
+    );
+
+    const unsubWorks = onSnapshot(qWorks, (snapshot) => {
       const docs = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
@@ -71,6 +84,7 @@ export default function Projects() {
     };
   }, []);
 
+  // --- Persistência e Filtros ---
   useEffect(() => {
     sessionStorage.setItem("art_searchTerm", searchTerm);
     sessionStorage.setItem("art_category", category);
@@ -121,9 +135,7 @@ export default function Projects() {
               <select value={category} onChange={(e) => setCategory(e.target.value)}>
                 <option value="Todos">Todas Categorias</option>
                 {categories.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
+                  <option key={cat} value={cat}>{cat}</option>
                 ))}
               </select>
 
@@ -137,50 +149,52 @@ export default function Projects() {
         </div>
 
         {loading ? (
-          <div className="loading-state">Carregando acervo...</div>
+          <div className="loading-state">
+            <div className="spinner"></div>
+            <p>Carregando acervo...</p>
+          </div>
         ) : (
           <>
             <div className="projects-grid">
-              {currentItems.map((work) => (
-                <div key={work.id} className="project-card">
-                  <div className="card-image-container">
-                    <img src={work.image} alt={work.title} />
-                    <span className={`card-badge ${work.status}`}>{work.category}</span>
-                    {work.status === "vendido" && <div className="sold-overlay">Vendido</div>}
-                  </div>
-                  <div className="card-info">
-                    <h3>{work.title}</h3>
-                    <div className="price-status-row">
-                      <p className="card-price">
-                        {work.price
-                          ? `R$ ${Number(work.price).toLocaleString('pt-BR', {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2
-                            })}`
-                          : "Consulte valor"}
-                      </p>
-                      <span className={`status-tag ${work.status}`}>
-                        {work.status === "disponivel" ? "Disponível" :
-                          work.status === "vendido" ? "Vendido" : "Por Encomenda"}
-                      </span>
+              {currentItems.length > 0 ? (
+                currentItems.map((work) => (
+                  <div key={work.id} className="project-card">
+                    <div className="card-image-container">
+                      <img src={work.image} alt={work.title} loading="lazy" />
+                      <span className={`card-badge ${work.status}`}>{work.category}</span>
+                      {work.status === "vendido" && <div className="sold-overlay">Vendido</div>}
                     </div>
-                    <p className="card-size">{work.dimensions}</p>
-                    <button
-                      className="view-details-btn"
-                      onClick={() => navigate(`/art/${work.id}`, { state: { work } })}
-                    >
-                      Ver Detalhes
-                    </button>
+                    <div className="card-info">
+                      <h3>{work.title}</h3>
+                      <div className="price-status-row">
+                        <p className="card-price">
+                          {work.price
+                            ? `R$ ${Number(work.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
+                            : "Consulte valor"}
+                        </p>
+                        <span className={`status-tag ${work.status}`}>
+                          {work.status === "disponivel" ? "Disponível" :
+                            work.status === "vendido" ? "Vendido" : "Por Encomenda"}
+                        </span>
+                      </div>
+                      <p className="card-size">{work.dimensions}</p>
+                      <button
+                        className="view-details-btn"
+                        onClick={() => navigate(`/art/${work.id}`, { state: { work } })}
+                      >
+                        Ver Detalhes
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p className="no-results">Nenhuma obra encontrada para esta busca.</p>
+              )}
             </div>
 
             {totalPages > 1 && (
               <div className="pagination">
-                <button disabled={currentPage === 1} onClick={() => setCurrentPage(prev => prev - 1)}>
-                  Anterior
-                </button>
+                <button disabled={currentPage === 1} onClick={() => setCurrentPage(prev => prev - 1)}>Anterior</button>
                 {Array.from({ length: totalPages }, (_, i) => (
                   <button
                     key={i + 1}
@@ -190,9 +204,7 @@ export default function Projects() {
                     {i + 1}
                   </button>
                 ))}
-                <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(prev => prev + 1)}>
-                  Próximo
-                </button>
+                <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(prev => prev + 1)}>Próximo</button>
               </div>
             )}
           </>
