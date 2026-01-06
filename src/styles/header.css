@@ -9,7 +9,8 @@ header {
   height: 72px; /* Aumentei um pouco para respirar melhor */
   padding: 0 6%;
   background: transparent;
-  z-index: 1000;
+z-index: 9999 !important;
+pointer-events: none;
 }
 
 /* Botões da Esquerda (Início/Sobre) */
@@ -17,7 +18,27 @@ header .header-left {
   display: flex;
   gap: 15px;
 }
+header .header-left, 
+header .menu-wrapper {
+  pointer-events: auto;
+}
+/* No seu Header atual */
+header .header-left, 
+header .menu-wrapper {
+  pointer-events: auto;
+  /* Garante que o wrapper não ocupe a tela toda */
+  height: fit-content; 
+}
 
+/* No seu dropdown para evitar cliques fantasmas quando fechado */
+.dropdown {
+  /* ... seu código ... */
+  pointer-events: none; /* Já está no seu código, ótimo! */
+}
+
+.dropdown.active {
+  pointer-events: auto; /* Garante que os links funcionem ao abrir */
+}
 header button {
   padding: 10px 22px;
   background: rgba(0, 0, 0, .35);
@@ -44,6 +65,7 @@ header button:hover {
 
 /* DROPDOWN PRINCIPAL */
 .dropdown {
+z-index: 9999 !important;
   position: absolute;
   top: 120%;
   right: 0;

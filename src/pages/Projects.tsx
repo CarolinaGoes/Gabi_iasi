@@ -1,9 +1,8 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import "../styles/projects.css";
 
-// Interface para tipagem das obras
 interface Work {
   id: number;
   title: string;
@@ -16,11 +15,20 @@ interface Work {
   popularity: number;
 }
 
-// Exemplo de dados (Simulando o que viria do banco ou admin)
 const worksData: Work[] = [
-  { id: 1, title: "Abstração Azul", category: "Pintura", price: 1200, size: "100x80cm", description: "Uma exploração das nuances oceânicas...", image: "https://via.placeholder.com/400", date: "2024-01-15", popularity: 85 },
-  { id: 2, title: "Linhas Urbanas", category: "Desenho", price: 450, size: "50x50cm", description: "Traços inspirados na arquitetura paulista...", image: "https://via.placeholder.com/400", date: "2023-12-10", popularity: 92 },
-  // Adicione mais itens para testar a paginação
+  { id: 1, title: "Vibração Solar", category: "Pintura", price: 2100, size: "120x90cm", description: "Cores vibrantes...", image: "https://via.placeholder.com/400", date: "2024-01-15", popularity: 85 },
+  { id: 1, title: "Vibração Solar", category: "Pintura", price: 2100, size: "120x90cm", description: "Cores vibrantes...", image: "https://via.placeholder.com/400", date: "2024-01-15", popularity: 85 },
+  { id: 1, title: "Vibração Solar", category: "Pintura", price: 2100, size: "120x90cm", description: "Cores vibrantes...", image: "https://via.placeholder.com/400", date: "2024-01-15", popularity: 85 },
+  { id: 2, title: "Abstração Azul", category: "Pintura", price: 1200, size: "100x80cm", description: "Nuances oceânicas...", image: "https://via.placeholder.com/400", date: "2024-02-10", popularity: 92 },
+  { id: 2, title: "Abstração Azul", category: "Pintura", price: 1200, size: "100x80cm", description: "Nuances oceânicas...", image: "https://via.placeholder.com/400", date: "2024-02-10", popularity: 92 },
+  { id: 2, title: "Abstração Azul", category: "Pintura", price: 1200, size: "100x80cm", description: "Nuances oceânicas...", image: "https://via.placeholder.com/400", date: "2024-02-10", popularity: 92 },
+  { id: 2, title: "Abstração Azul", category: "Pintura", price: 1200, size: "100x80cm", description: "Nuances oceânicas...", image: "https://via.placeholder.com/400", date: "2024-02-10", popularity: 92 },
+  { id: 2, title: "Abstração Azul", category: "Pintura", price: 1200, size: "100x80cm", description: "Nuances oceânicas...", image: "https://via.placeholder.com/400", date: "2024-02-10", popularity: 92 },
+  { id: 2, title: "Abstração Azul", category: "Pintura", price: 1200, size: "100x80cm", description: "Nuances oceânicas...", image: "https://via.placeholder.com/400", date: "2024-02-10", popularity: 92 },
+  { id: 2, title: "Abstração Azul", category: "Pintura", price: 1200, size: "100x80cm", description: "Nuances oceânicas...", image: "https://via.placeholder.com/400", date: "2024-02-10", popularity: 92 },
+  { id: 3, title: "Linhas Urbanas", category: "Desenho", price: 450, size: "50x50cm", description: "Traços inspirados...", image: "https://via.placeholder.com/400", date: "2023-12-05", popularity: 78 },
+  { id: 3, title: "Linhas Urbanas", category: "Desenho", price: 450, size: "50x50cm", description: "Traços inspirados...", image: "https://via.placeholder.com/400", date: "2023-12-05", popularity: 78 },
+  { id: 3, title: "Linhas Urbanas", category: "Desenho", price: 450, size: "50x50cm", description: "Traços inspirados...", image: "https://via.placeholder.com/400", date: "2023-12-05", popularity: 78 },
 ];
 
 export default function Projects() {
@@ -28,14 +36,16 @@ export default function Projects() {
   const [category, setCategory] = useState("Todos");
   const [sortBy, setSortBy] = useState("recent");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  const itemsPerPage = 9; // Alterado para 9 conforme solicitado
 
-  // Lógica de Filtro e Busca
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, category]);
+
   const filteredWorks = useMemo(() => {
     return worksData
       .filter((work) => {
-        const matchesSearch = work.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                              work.description.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSearch = work.title.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesCategory = category === "Todos" || work.category === category;
         return matchesSearch && matchesCategory;
       })
@@ -47,18 +57,14 @@ export default function Projects() {
       });
   }, [searchTerm, category, sortBy]);
 
-  // Paginação
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredWorks.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredWorks.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
   const totalPages = Math.ceil(filteredWorks.length / itemsPerPage);
 
   return (
-    <div className="projects-page">
+    <div className="projects-page-wrapper">
       <Header />
-      
       <main className="projects-container">
-        <header className="projects-header">
+        <div className="projects-header-section">
           <h1>Obras</h1>
           <div className="filters-bar">
             <input 
@@ -68,41 +74,32 @@ export default function Projects() {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="search-input"
             />
-            
             <div className="select-group">
-              <select onChange={(e) => setCategory(e.target.value)}>
+              <select value={category} onChange={(e) => setCategory(e.target.value)}>
                 <option value="Todos">Todas Categorias</option>
                 <option value="Pintura">Pintura</option>
                 <option value="Desenho">Desenho</option>
-                <option value="Escultura">Escultura</option>
               </select>
-
-              <select onChange={(e) => setSortBy(e.target.value)}>
+              <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
                 <option value="recent">Mais Recentes</option>
-                <option value="popularity">Popularidade</option>
-                <option value="price-asc">Preço: Menor para Maior</option>
-                <option value="price-desc">Preço: Maior para Menor</option>
+                <option value="price-asc">Menor Preço</option>
+                <option value="price-desc">Maior Preço</option>
               </select>
             </div>
           </div>
-        </header>
+        </div>
 
         <div className="projects-grid">
-          {currentItems.map((work) => (
-            <div key={work.id} className="project-card">
-              <div className="card-image">
+          {currentItems.map((work, index) => (
+            <div key={`${work.id}-${index}`} className="project-card">
+              <div className="card-image-container">
                 <img src={work.image} alt={work.title} />
-                <span className="card-category">{work.category}</span>
+                <span className="card-badge">{work.category}</span>
               </div>
-              <div className="card-content">
-                <div className="card-header">
-                  <h3>{work.title}</h3>
-                  <span className="card-price">R$ {work.price}</span>
-                </div>
-                <p className="card-size">Medidas: {work.size}</p>
-                <p className="card-description">
-                  {work.description.substring(0, 80)}...
-                </p>
+              <div className="card-info">
+                <h3>{work.title}</h3>
+                <p className="card-price">R$ {work.price}</p>
+                <p className="card-size">{work.size}</p>
                 <button className="view-details-btn">Ver Detalhes</button>
               </div>
             </div>
@@ -110,27 +107,34 @@ export default function Projects() {
         </div>
 
         {/* Paginação */}
-        <div className="pagination">
-          <button 
-            disabled={currentPage === 1} 
-            onClick={() => setCurrentPage(prev => prev - 1)}
-          > Anterior </button>
-          
-          {Array.from({ length: totalPages }, (_, i) => (
+        {totalPages > 1 && (
+          <div className="pagination">
             <button 
-              key={i + 1} 
-              onClick={() => setCurrentPage(i + 1)}
-              className={currentPage === i + 1 ? "active" : ""}
-            > {i + 1} </button>
-          ))}
+              disabled={currentPage === 1} 
+              onClick={() => setCurrentPage(prev => prev - 1)}
+            >
+              Anterior
+            </button>
+            
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button 
+                key={i + 1} 
+                onClick={() => setCurrentPage(i + 1)}
+                className={currentPage === i + 1 ? "active" : ""}
+              >
+                {i + 1}
+              </button>
+            ))}
 
-          <button 
-            disabled={currentPage === totalPages} 
-            onClick={() => setCurrentPage(prev => prev + 1)}
-          > Próximo </button>
-        </div>
+            <button 
+              disabled={currentPage === totalPages} 
+              onClick={() => setCurrentPage(prev => prev + 1)}
+            >
+              Próximo
+            </button>
+          </div>
+        )}
       </main>
-
       <Footer />
     </div>
   );
